@@ -4,6 +4,7 @@ import requests
 import json
 import datetime
 import subprocess
+import matplotlib.pyplot as plt
 
 subprocess.run("pip install tabulate", shell=True)
 
@@ -29,6 +30,19 @@ st.header(f"Active days count: ")
 df_temp = pd.DataFrame(weekly_user_data['active_days_count'].value_counts(ascending=True))
 st.write(df_temp.to_markdown())
 
+active_days_counts = weekly_user_data['active_days_count'].value_counts(ascending=True)
+
+fig, ax = plt.subplots(figsize=(8, 5))
+ax.bar(active_days_counts.index, active_days_counts.values, color='skyblue', edgecolor='black')
+ax.set_xlabel('Active Days Count')
+ax.set_ylabel('Frequency')
+ax.set_title('Distribution of Active Days')
+ax.set_xticks(active_days_counts.index)
+
+# Display in Streamlit
+st.pyplot(fig)
+
+
 # Define chat ranges
 bins = [1, 2, 5, 15, float('inf')] 
 labels = ["1", "2-5", "6-15", "15+"]
@@ -44,6 +58,18 @@ result_df.index.name = 'Chat Range'
 
 # Print with styling
 st.write(result_df.to_markdown())
+
+result = chat_user_range.value_counts().sort_index(ascending=True)
+# Matplotlib Figure
+fig, ax = plt.subplots(figsize=(8, 5))
+ax.bar(list(result.index), result.values, color='skyblue', edgecolor='black')
+ax.set_xlabel('Active Days Count')
+ax.set_ylabel('Frequency')
+ax.set_title('Distribution of Active Days')
+ax.set_xticks(active_days_counts.index)
+
+# Display in Streamlit
+st.pyplot(fig)
 
 # Percentage's
 st.header(f"Percentage of users who have done atleast 10 chats a week: {round((weekly_user_data[weekly_user_data['total_chats'] >= 10].shape[0] / weekly_user_data['id'].value_counts().sum()) * 100, 1)}%")
