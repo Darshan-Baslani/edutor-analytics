@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 import json
 import datetime
+import tabulate
  
 st.title("Weekly Analytics")
 
