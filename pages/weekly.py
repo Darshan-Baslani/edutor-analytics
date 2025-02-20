@@ -3,7 +3,10 @@ import pandas as pd
 import requests
 import json
 import datetime
-import tabulate
+import subprocess
+
+subprocess.run("pip install tabulate", shell=True)
+
  
 st.title("Weekly Analytics")
 
