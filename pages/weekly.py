@@ -47,6 +47,6 @@ result_df.index.name = 'Chat Range'
 st.write(result_df.to_markdown())
 
 # Percentage's
-st.header(f"Percentage of users who have done atleast 10 chats a week: {round((weekly_user_data[weekly_user_data['total_chats'] >= 10].shape[0] / weekly_user_data['id'].value_counts().sum()) * 100, 1)}%")
-st.header(f"Percentage of users who used the app for 3 days or more: {round((weekly_user_data[weekly_user_data['active_days_count'] >= 3].shape[0] / weekly_user_data['id'].value_counts().sum()) * 100, 1)}%")
-st.header(f"Percentage of users who used the app for a single day: {round((weekly_user_data[weekly_user_data['active_days_count'] == 1].shape[0]/ weekly_user_data['id'].value_counts().sum()) * 100, 1)}%")
+st.header(f"Percentage of users who have done atleast 10 chats a week: {round((weekly_user_data[weekly_user_data['total_chats'] >= 10].shape[0] / weekly_user_data['id'].value_counts().sum()) * 100)}%")
+st.header(f"Percentage of users who used the app for 3 days or more: {round((weekly_user_data[weekly_user_data['active_days_count'] >= 3].shape[0] / weekly_user_data['id'].value_counts().sum()) * 100)}%")
+st.header(f"Percentage of users who used the app for a single day: {round((weekly_user_data[weekly_user_data['active_days_count'] == 1].shape[0]/ weekly_user_data['id'].value_counts().sum()) * 100)}%")
