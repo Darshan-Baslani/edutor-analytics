@@ -26,22 +26,18 @@ st.header(f"Per user avg. chat: {round(weekly_user_data['total_chats'].sum() / w
 st.header(f"Per user avg. queries: {round(weekly_user_data['total_queries'].sum() / weekly_user_data['id'].value_counts().sum(), 1)}")
 
 st.header(f"Active days count: ")
-df_temp = pd.DataFrame(weekly_user_data['active_days_count'].value_counts())
-st.write(df_temp.to_markdown())
-
-st.header(f"Ketla users ae ketly chat kri: ")
-df_temp = pd.DataFrame(weekly_user_data['total_chats'].value_counts())
+df_temp = pd.DataFrame(weekly_user_data['active_days_count'].value_counts(ascending=True))
 st.write(df_temp.to_markdown())
 
 # Define chat ranges
-bins = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, float('inf')]  # Adjust as needed
-labels = ["0-5", "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50", "50+"]
+bins = [1, 2, 5, 15, float('inf')] 
+labels = ["1", "2-5", "6-15", "15+"]
 
 # Categorize total_chats into bins
 chat_user_range = pd.cut(weekly_user_data["total_chats"], bins=bins, labels=labels, right=False)
 st.header(f"Chats range:")
 
-result = chat_user_range.value_counts().sort_index()
+result = chat_user_range.value_counts().sort_index(ascending=False)
 result_df = pd.DataFrame(result)
 result_df.columns = ['Number of Users']
 result_df.index.name = 'Chat Range'
