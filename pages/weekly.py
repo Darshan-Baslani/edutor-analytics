@@ -19,7 +19,7 @@ response = requests.get(f"https://newapi.edutorapp.com/api/admin/chapter-ai/week
 data = json.loads(response.text)
 weekly_user_data = pd.DataFrame(data['users'])
 
-st.header(f"Total users per week: {weekly_user_data['id'].value_counts().sum()}")
+st.header(f"Total users: {weekly_user_data['id'].value_counts().sum()}")
 st.header(f"Total chats: {weekly_user_data['total_chats'].sum()}")
 st.header(f"Total queries: {weekly_user_data['total_queries'].sum()}")
 st.header(f"Per user avg. chat: {round(weekly_user_data['total_chats'].sum() / weekly_user_data['id'].value_counts().sum(), 1)}")
