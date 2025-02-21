@@ -1,7 +1,44 @@
 import streamlit as st
+import pandas as pd
+import datetime
+import requests
+import json
+import ast
 
 st.sidebar.title("Navigation")
 st.sidebar.page_link("pages/weekly.py", label="Weekly Analytics")
 
-st.title("Main Page")
-st.write("Welcome to the main page!")
+st.title("Daily Analytics")
+
+date = st.date_input("Data for date: ", datetime.date.today() - datetime.timedelta(days=1))
+
+response = requests.get(f"https://newapi.edutorapp.com/api/admin/chapter-ai/data?start_date={date}&end_date={date}")
+data = json.loads(response.text)
+daily_data = pd.DataFrame(data)
+
+response = requests.get(f"https://newapi.edutorapp.com/api/admin/chapter-ai/users?date={date}")
+data = json.loads(response.text)
+new_user_day_wise = pd.DataFrame(data['users'])
+print(data['total_users'])
+
+
+def safe_literal_eval(val):
+    # If it's already a list or dict, return it as is
+    if not isinstance(val, str):
+        return val
+    try:
+        return ast.literal_eval(val)
+    except Exception as e:
+        print("Error converting:", val, "\nError:", e)
+        # Return the original value or an empty list if conversion fails
+        return []
+
+# Suppose daily_data is your DataFrame and 'chats' is the column with chat data.
+daily_data['chats'] = daily_data['chats'].apply(safe_literal_eval)
+
+# Now you can count the total number of individual messages across all sessions:
+total_messages = daily_data['chats'].apply(len).sum()
+
+st.header(f"Total Queries: {total_messages}")
+st.header(f"Total users: {len(daily_data['user_id'].value_counts())}")
+st.header(f"New Users: {data['total_users']}")
