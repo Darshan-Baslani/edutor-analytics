@@ -11,6 +11,10 @@ st.sidebar.page_link("pages/weekly.py", label="Weekly Analytics")
 st.title("Daily Analytics")
 
 date = st.date_input("Data for date: ", datetime.date.today() - datetime.timedelta(days=1))
+# Fetching data from api and converting it into DF
+response = requests.get(f"https://newapi.edutorapp.com/api/admin/chapter-ai/weekly-stats?start_date={date}&end_date={date}")
+data = json.loads(response.text)
+weekly_user_data = pd.DataFrame(data['users'])
 
 response = requests.get(f"https://newapi.edutorapp.com/api/admin/chapter-ai/data?start_date={date}&end_date={date}")
 data = json.loads(response.text)
@@ -19,8 +23,6 @@ daily_data = pd.DataFrame(data)
 response = requests.get(f"https://newapi.edutorapp.com/api/admin/chapter-ai/users?date={date}")
 data = json.loads(response.text)
 new_user_day_wise = pd.DataFrame(data['users'])
-print(data['total_users'])
-
 
 def safe_literal_eval(val):
     # If it's already a list or dict, return it as is
@@ -42,3 +44,4 @@ total_messages = daily_data['chats'].apply(len).sum()
 st.header(f"Total Queries: {total_messages}")
 st.header(f"Total users: {len(daily_data['user_id'].value_counts())}")
 st.header(f"New Users: {data['total_users']}")
+st.header(f"Total chats: {weekly_user_data['total_chats'].sum()}")
