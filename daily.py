@@ -24,6 +24,15 @@ response = requests.get(f"https://newapi.edutorapp.com/api/admin/chapter-ai/user
 data = json.loads(response.text)
 new_user_day_wise = pd.DataFrame(data['users'])
 
+# Download daily_data
+daily_data_csv = daily_data.to_csv(index=False)
+st.download_button(
+    label="Download CSV",
+    data=daily_data_csv,  # Convert string to bytes
+    file_name=f"data_{date}.csv",
+    mime="text/csv",
+)
+
 def safe_literal_eval(val):
     # If it's already a list or dict, return it as is
     if not isinstance(val, str):
