@@ -20,6 +20,14 @@ response = requests.get(f"https://newapi.edutorapp.com/api/admin/chapter-ai/week
 data = json.loads(response.text)
 weekly_user_data = pd.DataFrame(data['users'])
 
+weekly_user_data_csv = weekly_user_data.to_csv(index=False)
+st.download_button(
+    label="Download CSV",
+    data=weekly_user_data_csv,  # Convert string to bytes
+    file_name=f"data_{from_date} to {to_date}.csv",
+    mime="text/csv",
+)
+
 st.header(f"Total users: {weekly_user_data['id'].value_counts().sum()}")
 st.header(f"Total chats: {weekly_user_data['total_chats'].sum()}")
 st.header(f"Total queries: {weekly_user_data['total_queries'].sum()}")
