@@ -20,11 +20,16 @@ response = requests.get(f"https://newapi.edutorapp.com/api/admin/chapter-ai/week
 data = json.loads(response.text)
 weekly_user_data = pd.DataFrame(data['users'])
 
-weekly_user_data_csv = weekly_user_data.to_csv(index=False)
+response = requests.get(f"https://newapi.edutorapp.com/api/admin/chapter-ai/data?start_date={from_date}&end_date={to_date}")
+data = json.loads(response.text)
+weekly_chat_data = pd.DataFrame(data)
+
+# Download daily_data
+weekly_chat_data_csv = weekly_chat_data.to_csv(index=False)
 st.download_button(
     label="Download CSV",
-    data=weekly_user_data_csv,  # Convert string to bytes
-    file_name=f"data_{from_date} to {to_date}.csv",
+    data=weekly_chat_data_csv,  # Convert string to bytes
+    file_name=f"data_{from_date}_{to_date}.csv",
     mime="text/csv",
 )
 
