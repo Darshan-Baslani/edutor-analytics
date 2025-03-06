@@ -60,13 +60,12 @@ st.markdown(f"- Chats: {weekly_user_data['total_chats'].sum()}")
 st.markdown(f"- Avg Query/user: {round(total_messages / len(daily_data['user_id'].value_counts()))}")
 st.markdown(f"- New Users: {data['total_users']}")
 
-
-payload = {"query": 'SELECT u.id, u.name, u.whatsapp, u.role, 13 - MAX(ud.standard_id) AS standard, ai.feature_id, ai.created_at FROM ai_analysis ai INNER JOIN users u ON u.id = ai.user_id LEFT JOIN user_defaults ud ON ud.user_id = u.id WHERE DATE(ai.created_at) = "2025-03-04" GROUP BY u.id, u.slug, u.name, u.whatsapp, u.role, u.created_at, ai.feature_id, ai.created_at;'}
+date = str(date)
+payload = {"query": f'SELECT u.id, u.name, u.whatsapp, u.role, 13 - MAX(ud.standard_id) AS standard, ai.feature_id, ai.created_at FROM ai_analysis ai INNER JOIN users u ON u.id = ai.user_id LEFT JOIN user_defaults ud ON ud.user_id = u.id WHERE DATE(ai.created_at) = "{date}" GROUP BY u.id, u.slug, u.name, u.whatsapp, u.role, u.created_at, ai.feature_id, ai.created_at;'}
 
 queries = requests.post("https://newapi.edutorapp.com/api/download-query-data", json=payload)
 
 queries = pd.read_csv(StringIO(queries.text))
-queries.head()
 
 total = queries['feature_id'].value_counts()[4.4] + queries['feature_id'].value_counts()[4.5] + queries['feature_id'].value_counts()[4.6]
 
@@ -75,7 +74,11 @@ st.markdown(f"- Total Queries - {len(queries[queries['feature_id'].isin([4.4, 4.
 st.markdown(f"- Text - {queries['feature_id'].value_counts()[4.6]} - ({round(queries['feature_id'].value_counts()[4.6] / total * 100)})%")
 st.markdown(f"- Voice - {queries['feature_id'].value_counts()[4.4]} - ({round(queries['feature_id'].value_counts()[4.4] / total * 100)})%")
 st.markdown(f"- Image - {queries['feature_id'].value_counts()[4.5]} - ({round(queries['feature_id'].value_counts()[4.5] / total * 100)})%")
+teacher = len(queries[(queries['role'] == 1) & (queries['feature_id'].isin([4.4, 4.5, 4.6]))]['id'].unique())
+student = len(queries[(queries['role'] == 0) & (queries['feature_id'].isin([4.4, 4.5, 4.6]))]['id'].unique())
+st.markdown(f"- Teacher - {teacher} - {round((teacher / (student + teacher)) * 100)}%")
+st.markdown(f"- Student - {student} - {round((student / (student + teacher)) * 100)}%")
 st.markdown(f"# Failed Queries:")
 st.markdown(f"- {(len(queries[queries['feature_id'].isin([4.4, 4.5, 4.6])]) - total_messages)} - {round((len(queries[queries['feature_id'].isin([4.4, 4.5, 4.6])]) - total_messages) / len(queries[queries['feature_id'].isin([4.4, 4.5, 4.6])]) * 100)}%")
 st.markdown(f"# User Loss:")
-st.markdown(f"- {len(queries[queries['feature_id'].isin([4.4, 4.5, 4.6])]['id'].unique()) - len(daily_data['user_id'].value_counts()) } - {round((len(queries[queries['feature_id'].isin([4.4, 4.5, 4.6])]['id'].unique()) - len(daily_data['user_id'].value_counts())) / len(queries[queries['feature_id'].isin([4.4, 4.5, 4.6])]['id'].unique())* 100)}%")
+st.markdown(f"- {len(daily_data['user_id'].value_counts()) - len(queries[queries['feature_id'].isin([4.4, 4.5, 4.6])]['id'].unique())} - {round((len(queries[queries['feature_id'].isin([4.4, 4.5, 4.6])]['id'].unique()) - len(daily_data['user_id'].value_counts())) / len(queries[queries['feature_id'].isin([4.4, 4.5, 4.6])]['id'].unique())* 100)}%")
