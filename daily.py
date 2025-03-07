@@ -8,6 +8,7 @@ from io import StringIO
 
 st.sidebar.title("Navigation")
 st.sidebar.page_link("pages/weekly.py", label="Weekly Analytics")
+st.sidebar.page_link("pages/graphs.py", label="Graphs")
 
 st.title("Daily Data")
 
