@@ -5,6 +5,7 @@ import json
 import datetime
 import subprocess
 import matplotlib.pyplot as plt
+from datetime import time, timedelta
 
 subprocess.run("pip install tabulate", shell=True)
 
@@ -36,6 +37,21 @@ st.download_button(
     mime="text/csv",
 )
 
+# New Users
+weekly_user_data['created_at'] = pd.to_datetime(weekly_user_data['created_at']).dt.date
+def get_date_range(start_date, end_date):
+    # Calculate the number of days between the two dates
+    delta = end_date - start_date  
+    # Generate list of dates from start_date to end_date (inclusive)
+    return [start_date + timedelta(days=i) for i in range(delta.days + 1)]
+
+date_list = get_date_range(from_date, to_date)
+
+length = 0
+for date in date_list:
+    length += len(weekly_user_data[weekly_user_data['created_at'] == date])
+    
+st.header(f"New Users: {length}")
 st.header(f"Total users: {weekly_user_data['id'].value_counts().sum()}")
 st.header(f"Total chats: {weekly_user_data['total_chats'].sum()}")
 st.header(f"Total queries: {weekly_user_data['total_queries'].sum()}")

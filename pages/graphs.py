@@ -12,8 +12,11 @@ import ast
 
 st.title("Graphs")
 
-from_date = st.date_input("Data starting form: ", datetime.date.today() - datetime.timedelta(days=7))
-to_date = st.date_input("To: ", datetime.date.today())
+with st.form(key='date_form'):
+    from_date = st.date_input("Data starting form: ", datetime.date.today() - datetime.timedelta(days=7))
+    to_date = st.date_input("To: ", datetime.date.today())
+
+    submit_button = st.form_submit_button(label='Go!')
 
 payload = {
     "query": f'''
@@ -102,7 +105,17 @@ def safe_literal_eval(val):
         # Return the original value or an empty list if conversion fails
         return []
 
+daily_data['created_at'] = pd.to_datetime(daily_data['created_at']).dt.date
+start_date = graphs_data.iloc[0]['created_at']
+end_date = graphs_data.iloc[-1]['created_at']
+date_list = get_date_range(start_date, end_date)
 
+successful_queries_list = []
+for date in date_list:
+    successful_queries_list.append(daily_data[daily_data['created_at'] == date].apply(safe_literal_eval).apply(len).sum())
+    
+print(successful_queries_list)
+st.write("damn: ", successful_queries_list)
 
 # Suppose daily_data is your DataFrame and 'chats' is the column with chat data.
 daily_data['chats'] = daily_data['chats'].apply(safe_literal_eval)
