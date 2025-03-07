@@ -16,7 +16,7 @@ with st.form(key='date_form'):
     from_date = st.date_input("Data starting form: ", datetime.date.today() - datetime.timedelta(days=7))
     to_date = st.date_input("To: ", datetime.date.today())
     
-    submit_button = st.form_submit_button(label='Update Dates')
+    submit_button = st.form_submit_button(label='Go!')
 
 # Fetching data from api and converting it into DF
 response = requests.get(f"https://newapi.edutorapp.com/api/admin/chapter-ai/weekly-stats?start_date={from_date}&end_date={to_date}")
