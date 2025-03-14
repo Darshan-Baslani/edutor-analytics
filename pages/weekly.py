@@ -25,11 +25,54 @@ data = json.loads(response.text)
 weekly_user_data = pd.DataFrame(data['users'])
 
 response = requests.get(f"https://newapi.edutorapp.com/api/admin/chapter-ai/data?start_date={from_date}&end_date={to_date}")
-data = json.loads(response.text)
-weekly_chat_data = pd.DataFrame(data)
+weekly_chat_data = pd.DataFrame(json.loads(response.text))
+daily_data = weekly_chat_data
+
+# Processing daily_data for chats seperation and csv uploadj
+temp_data = pd.DataFrame(daily_data['user_id'])
+temp_data['chats'] = daily_data['chats']
+daily_data = temp_data
+daily_data['prompt'] = None
+daily_data['response'] = None
+
+i = 0
+while i < len(daily_data):
+    chat = daily_data.loc[i, 'chats']
+    if type(chat) == float:
+        i+=1
+        continue
+    if len(chat) == 1:
+        daily_data.loc[i, 'prompt'] = chat[0]['prompt']
+        daily_data.loc[i, 'response'] = chat[0]['model_reponse']
+        i += 1
+    else:
+        # Remove the current row
+        current_row = daily_data.loc[i].copy()
+        daily_data = daily_data.drop(i).reset_index(drop=True)
+        
+        # Create new rows for each chat entry
+        new_rows = []
+        for record in chat:
+            try:
+                new_rows.append({
+                    'user_id': current_row['user_id'],
+                    'prompt': record['prompt'],
+                    'response': record['model_reponse']
+                })
+            except Exception as e:
+                pass
+        
+        # Insert all new rows at position i
+        new_df = pd.DataFrame(new_rows)
+        daily_data = pd.concat([daily_data.iloc[:i], new_df, daily_data.iloc[i:]], ignore_index=True)
+        
+        # Move index past all newly inserted rows
+        i += len(new_rows)
+daily_data = daily_data.drop(columns=['chats'])
+i=0
 
 # Download daily_data
-weekly_chat_data_csv = weekly_chat_data.to_csv(index=False)
+weekly_chat_data_csv = daily_data.to_csv(index=False)
 st.download_button(
     label="Download CSV",
     data=weekly_chat_data_csv,  # Convert string to bytes
