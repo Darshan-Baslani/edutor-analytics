@@ -60,6 +60,8 @@ st.markdown(f"- Users: {len(daily_data['user_id'].value_counts())}")
 st.markdown(f"- Chats: {weekly_user_data['total_chats'].sum()}")
 st.markdown(f"- Avg Query/user: {round(total_messages / len(daily_data['user_id'].value_counts()))}")
 st.markdown(f"- New Users: {data['total_users']}")
+st.markdown(f"- New Students: {data['role_0_count']}")
+st.markdown(f"- New Teachers: {data['role_1_count']}")
 
 date = str(date)
 payload = {"query": f'SELECT u.id, u.name, u.whatsapp, u.role, 13 - MAX(ud.standard_id) AS standard, ai.feature_id, ai.created_at FROM ai_analysis ai INNER JOIN users u ON u.id = ai.user_id LEFT JOIN user_defaults ud ON ud.user_id = u.id WHERE DATE(ai.created_at) = "{date}" GROUP BY u.id, u.slug, u.name, u.whatsapp, u.role, u.created_at, ai.feature_id, ai.created_at;'}
